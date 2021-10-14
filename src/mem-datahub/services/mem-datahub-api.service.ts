@@ -19,9 +19,8 @@ export class MemDataHubAPIService{
             consumer
             .query()
             .withDataset('ybsi-jur4')
-            // .offset(530000)
-            .limit(10)
-            .where(this.soda.expr.or(this.soda.expr.eq('category', 'Theft'), this.soda.expr.eq('category', 'Property Crime')))
+            .limit(100)
+            .where(this.soda.expr.or(this.soda.expr.eq('category', 'Theft'), this.soda.expr.eq('category', 'Assault')))
             // .where({ category: "Property Crime"})
             .order("offense_date desc")
             .getRows()
