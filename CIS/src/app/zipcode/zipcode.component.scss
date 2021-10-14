@@ -1,0 +1,20 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: bold;
+    font-size: 1.2rem;
+
+    li {
+        background: rgb(238, 238, 238);
+        padding: 1em;
+        margin-right: 10px;
+        width: 20%;
+        height: 200px;
+        margin-bottom: 1em;
+        display: flex;
+        flex-direction: column;
+    }
+}
