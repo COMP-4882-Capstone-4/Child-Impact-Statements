@@ -22,6 +22,8 @@ export class MemDataHubAPIService{
             .limit(100)
             .where(this.soda.expr.or(this.soda.expr.eq('category', 'Theft'), this.soda.expr.eq('category', 'Assault')))
             // .where({ category: "Property Crime"})
+            // .where(this.soda.expr.gte("offense_date", "2021-01"))
+            // .where(this.soda.expr.and(this.soda.expr.eq('category', 'Theft'), this.soda.expr.gte("offense_date", "2021-01")))
             .order("offense_date desc")
             .getRows()
             .on('success', (rows) => {
