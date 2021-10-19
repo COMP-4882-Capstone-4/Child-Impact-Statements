@@ -10,9 +10,15 @@ export class CensusAPIService {
     this.apiKey = this.configService.get<string>('CENSUS_API_KEY');
   }
 
-  buildRequest(sourcePath: string[], values: string[]) {
+  /**
+   * Build a CitySDK/Census request
+   * @param sourcePath - Values like 'acs', 'acs5', 'subject' (which builds a URL like /acs/acs5/subject)
+   * @param values - Values like 'NAME', 'S0101_C06_022E' (which is apart of the get list)
+   * @param vintage - Optionally specify a vintage, defaults to 2018
+   */
+  buildRequest(sourcePath: string[], values: string[], vintage = 2018) {
     const requestObject = {
-      vintage: '2018',
+      vintage,
       geoHierarchy: {
         state: '47',
         county: '157',
