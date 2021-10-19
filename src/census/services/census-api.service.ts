@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class CensusAPIService {
   private census = require('citysdk');
-  private soda = require('soda-js');
   private apiKey: string;
 
   constructor(private configService: ConfigService) {
@@ -39,27 +38,24 @@ export class CensusAPIService {
   }
 
   testRequest() {
-    /*return this.buildRequest(
+    return this.buildRequest(
       2000,
       ['pep', 'int_charagegroups'],
       ['POP', 'YEAR', 'AGEGRP', 'RACE_SEX', 'HISP'],
-    );*/
+    );
+  
+    this.census(
+      {
+        vintage: '2018',
+        geoHierarchy: {
+          state: "47",
+          county: "157"
+        },
+        sourcePath: ['acs','acs5'],
+        values: ['S0101_C06_022E'],
+      },
+      (err, res) => console.log(res) // [{"B00001_001E": 889,"state": "06","county": "049"}, ...
+    )
 
-    return new Promise((resolve) => {
-      const consumer = new this.soda.Consumer('data.memphistn.gov');
-
-      consumer
-        .query()
-        .withDataset('e4xa-n94q')
-        .limit(5)
-        .getRows()
-        .on('success', (rows) => {
-          resolve(rows);
-        })
-        .on('error', (error) => {
-          console.error(error);
-          resolve(error);
-        });
-    });
+    };
   }
-}
