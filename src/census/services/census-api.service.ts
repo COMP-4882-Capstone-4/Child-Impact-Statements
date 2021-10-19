@@ -10,15 +10,12 @@ export class CensusAPIService {
     this.apiKey = this.configService.get<string>('CENSUS_API_KEY');
   }
 
-  buildRequest(vintage: number, sourcePath: string[], values: string[]) {
+  buildRequest(sourcePath: string[], values: string[]) {
     const requestObject = {
-      vintage,
+      vintage: '2018',
       geoHierarchy: {
-        // required
-        county: {
-          lat: 28.2639,
-          lng: -80.7214,
-        },
+        state: '47',
+        county: '157',
       },
       sourcePath,
       values,
@@ -38,24 +35,6 @@ export class CensusAPIService {
   }
 
   testRequest() {
-    return this.buildRequest(
-      2000,
-      ['pep', 'int_charagegroups'],
-      ['POP', 'YEAR', 'AGEGRP', 'RACE_SEX', 'HISP'],
-    );
-  
-    this.census(
-      {
-        vintage: '2018',
-        geoHierarchy: {
-          state: "47",
-          county: "157"
-        },
-        sourcePath: ['acs','acs5'],
-        values: ['S0101_C06_022E'],
-      },
-      (err, res) => console.log(res) // [{"B00001_001E": 889,"state": "06","county": "049"}, ...
-    )
-
-    };
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C06_022E']);
   }
+}
