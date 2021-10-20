@@ -35,4 +35,42 @@ export class MemDataHubAPIService{
             })
         });
     }
+
+    parks(){
+        return new Promise((resolve) => {
+            const consumer = new this.soda.Consumer('data.memphistn.gov');
+
+            consumer
+            .query()
+            .withDataset('aeu5-vwkq')
+            .select('park_nam_1, zipcode, point')
+            .getRows()
+            .on('success', (rows) => {
+                resolve(rows);
+            })
+            .on('error', (error) => {
+                console.error(error);
+                resolve(error);
+            })
+        });
+    }
+
+    libraries(){
+        return new Promise((resolve) => {
+            const consumer = new this.soda.Consumer('data.memphistn.gov');
+
+            consumer
+            .query()
+            .withDataset('4kk2-hed2')
+            .select('user_name, staddr, the_geom')
+            .getRows()
+            .on('success', (rows) => {
+                resolve(rows);
+            })
+            .on('error', (error) => {
+                console.error(error);
+                resolve(error);
+            })
+        });
+    }
 }

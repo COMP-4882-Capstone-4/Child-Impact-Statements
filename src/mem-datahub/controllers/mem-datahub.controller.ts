@@ -12,4 +12,14 @@ export class MemDataHubController{
     testRequest(){
         return this.MemDataHubAPIService.testRequest();
     }
+
+    @Get('Parks')
+    parks(){
+        return this.MemDataHubAPIService.parks();
+    }
+
+    @Get('Libraries')
+    libraries(){
+        return this.MemDataHubAPIService.libraries();
+    }
 }
