@@ -73,4 +73,22 @@ export class MemDataHubAPIService{
             })
         });
     }
+
+    zipCodes(){
+        return new Promise((resolve) => {
+            const consumer = new this.soda.Consumer('data.memphistn.gov');
+
+            consumer
+            .query()
+            .withDataset('98jk-gvpk')
+            .getRows()
+            .on('success', (rows) => {
+                resolve(rows);
+            })
+            .on('error', (error) => {
+                console.error(error);
+                resolve(error);
+            })
+        });
+    }
 }

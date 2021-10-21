@@ -22,4 +22,9 @@ export class MemDataHubController{
     libraries(){
         return this.MemDataHubAPIService.libraries();
     }
+
+    @Get('zipCodes')
+    zipCodes(){
+        return this.MemDataHubAPIService.zipCodes();
+    }
 }
