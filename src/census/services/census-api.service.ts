@@ -40,7 +40,38 @@ export class CensusAPIService {
     });
   }
 
-  testRequest() {
-    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C06_022E']);
+  // TOTAL under 18 pop
+  under18Request() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C01_022E']);
+  }
+
+  // MEN under 18 pop
+  under18MaleRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C03_022E'])
+  }
+
+  // WOMEN under 18 POP
+  under18FemRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C05_022E']);
+  }
+
+  // Children 3 and older in Nursery School
+  over3InNurserySchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_034E']);
+  }
+
+  // Children 3 and older in K-8
+  over3InElementarySchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_035E']);
+  }
+  
+    // Children 3 and older in 9-12
+  over3InHighSchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_036E']);
+  }
+
+  // Poverty Rates in Families with Children under 18
+  under18FamilyPovertyRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_108E']);
   }
 }
