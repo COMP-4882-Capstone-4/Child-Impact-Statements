@@ -4,22 +4,24 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class CensusAPIService {
   private census = require('citysdk');
-  private soda = require('soda-js');
   private apiKey: string;
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('CENSUS_API_KEY');
   }
 
-  buildRequest(vintage: number, sourcePath: string[], values: string[]) {
+  /**
+   * Build a CitySDK/Census request
+   * @param sourcePath - Values like 'acs', 'acs5', 'subject' (which builds a URL like /acs/acs5/subject)
+   * @param values - Values like 'NAME', 'S0101_C06_022E' (which is apart of the get list)
+   * @param vintage - Optionally specify a vintage, defaults to 2018
+   */
+  buildRequest(sourcePath: string[], values: string[], vintage = 2018) {
     const requestObject = {
       vintage,
       geoHierarchy: {
-        // required
-        county: {
-          lat: 28.2639,
-          lng: -80.7214,
-        },
+        state: '47',
+        county: '157',
       },
       sourcePath,
       values,
@@ -38,28 +40,38 @@ export class CensusAPIService {
     });
   }
 
-  testRequest() {
-    /*return this.buildRequest(
-      2000,
-      ['pep', 'int_charagegroups'],
-      ['POP', 'YEAR', 'AGEGRP', 'RACE_SEX', 'HISP'],
-    );*/
+  // TOTAL under 18 pop
+  under18Request() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C01_022E']);
+  }
 
-    return new Promise((resolve) => {
-      const consumer = new this.soda.Consumer('data.memphistn.gov');
+  // MEN under 18 pop
+  under18MaleRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C03_022E'])
+  }
 
-      consumer
-        .query()
-        .withDataset('e4xa-n94q')
-        .limit(5)
-        .getRows()
-        .on('success', (rows) => {
-          resolve(rows);
-        })
-        .on('error', (error) => {
-          console.error(error);
-          resolve(error);
-        });
-    });
+  // WOMEN under 18 POP
+  under18FemRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0101_C05_022E']);
+  }
+
+  // Children 3 and older in Nursery School
+  over3InNurserySchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_034E']);
+  }
+
+  // Children 3 and older in K-8
+  over3InElementarySchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_035E']);
+  }
+  
+    // Children 3 and older in 9-12
+  over3InHighSchoolRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_036E']);
+  }
+
+  // Poverty Rates in Families with Children under 18
+  under18FamilyPovertyRequest() {
+    return this.buildRequest(['acs', 'acs5', 'subject'], ['NAME', 'S0501_C02_108E']);
   }
 }
