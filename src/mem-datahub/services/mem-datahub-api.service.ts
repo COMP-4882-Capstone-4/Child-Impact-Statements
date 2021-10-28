@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { RawGeoTract } from '../types/raw-tract.type';
+import { GeoFeature } from '../types/geo-feature.type';
+import { TractFeaturesResponse } from '../responses/tract-feature.response';
 
 @Injectable()
 export class MemDataHubAPIService {
-  private census = require('citysdk');
   private soda = require('soda-js');
   private apiKey: string;
 
@@ -124,29 +126,49 @@ export class MemDataHubAPIService {
     });
   }
 
-  fetchTractsWithGeometry(pageNumber = 0, pageSize = 30) {
+  fetchTractsWithGeometry(
+    pageNumber = 0,
+    pageSize = 30,
+  ): Promise<TractFeaturesResponse> {
     const offset = pageNumber * pageSize;
     const limit = pageSize;
 
-    return new Promise((resolve) => {
-      const stringSelection = MemDataHubAPIService.toCommaSeparated([
-        'tract',
-        'the_geom',
-      ]);
+    return this.getCensusTracts(true).then(
+      (total: number) =>
+        new Promise((resolve) => {
+          const stringSelection = MemDataHubAPIService.toCommaSeparated([
+            'tract',
+            'the_geom',
+          ]);
 
-      this.getConsumer('e4xa-n94q')
-        .select(stringSelection)
-        .limit(limit)
-        .offset(offset)
-        .getRows()
-        .on('success', (rows) => {
-          resolve(rows);
-        })
-        .on('error', (error) => {
-          console.error(error);
-          resolve(error);
-        });
-    });
+          const pagesRemaining = Math.ceil((total - offset) / pageSize);
+
+          this.getConsumer('e4xa-n94q')
+            .select(stringSelection)
+            .limit(limit)
+            .offset(offset)
+            .getRows()
+            .on('success', (rows: RawGeoTract[]) => {
+              const features = rows.map((r) =>
+                MemDataHubAPIService.toFeature(r.the_geom, r.tract),
+              );
+
+              resolve({
+                batchSize: features.length,
+                total,
+                pagesRemaining,
+                data: {
+                  type: 'FeatureCollection',
+                  features,
+                },
+              });
+            })
+            .on('error', (error) => {
+              console.error(error);
+              resolve(error);
+            });
+        }),
+    );
   }
 
   getTractGeometry(tract: string) {
@@ -161,14 +183,33 @@ export class MemDataHubAPIService {
         .limit(1)
         .where(this.soda.expr.eq('tract', tract))
         .getRows()
-        .on('success', (rows) => {
-          resolve(rows);
+        .on('success', (rows: RawGeoTract[]) => {
+          if (rows.length > 0) {
+            resolve(
+              MemDataHubAPIService.toFeature(rows[0].the_geom, rows[0].tract),
+            );
+          } else {
+            resolve(null);
+          }
         })
         .on('error', (error) => {
           console.error(error);
           resolve(error);
         });
     });
+  }
+
+  private static toFeature(
+    geometry: { type: string; coordinates: any },
+    label: string,
+  ): GeoFeature {
+    return {
+      type: 'Feature',
+      properties: {
+        name: label,
+      },
+      geometry,
+    };
   }
 
   private getConsumer(resource: string) {
