@@ -23,9 +23,24 @@ export class MemDataHubController {
   }
 
   @Get('zipCodes')
-  zipCodes() {
-    return this.MemDataHubAPIService.zipCodes();
+  @ApiQuery({ name: 'getCount', required: false, type: Boolean })
+  getZipCodes(@Query('getCount') getCount: boolean = false) {
+    return this.MemDataHubAPIService.getZipCodes(getCount);
   }
+
+  @Get('page/zipGeometry')
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'pageNumber', type: Number, required: false })
+  paginateZipGeometry(
+    @Query('pageSize') pageSize = 30,
+    @Query('pageNumber') pageNumber = 0,
+  ) {
+    return this.MemDataHubAPIService.fetchZipCodesWithGeometry(
+      pageNumber,
+      pageSize,
+    );
+  }
+
 
   @Get('tracts')
   @ApiQuery({ name: 'getCount', required: false, type: Boolean })
@@ -42,7 +57,7 @@ export class MemDataHubController {
   @Get('page/tractGeometry')
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
   @ApiQuery({ name: 'pageNumber', type: Number, required: false })
-  paginateTrackGeometry(
+  paginateTractGeometry(
     @Query('pageSize') pageSize = 30,
     @Query('pageNumber') pageNumber = 0,
   ) {

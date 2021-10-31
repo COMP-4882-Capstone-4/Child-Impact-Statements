@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RawGeoTract } from '../types/raw-tract.type';
 import { GeoFeature } from '../types/geo-feature.type';
-import { TractFeaturesResponse } from '../responses/tract-feature.response';
+import { GeoFeaturesResponse } from '../responses/geo-features.response';
+import { RawGeoZip, RawZip } from '../types/raw-zip.type';
 
 @Injectable()
 export class MemDataHubAPIService {
@@ -80,22 +81,74 @@ export class MemDataHubAPIService {
     });
   }
 
-  zipCodes() {
+  getZipCodes(count: boolean) {
     return new Promise((resolve) => {
-      const consumer = new this.soda.Consumer('data.memphistn.gov');
+      const baseSelection = MemDataHubAPIService.toCommaSeparated(['name']);
 
-      consumer
-        .query()
-        .withDataset('98jk-gvpk')
+      const stringSelection = count ? "count('name')" : baseSelection;
+
+      this.getConsumer('98jk-gvpk')
+        .select(stringSelection)
         .getRows()
-        .on('success', (rows) => {
-          resolve(rows);
+        .on('success', (rows: RawZip[] | any[]) => {
+          if (count && rows.length > 0) {
+            resolve(rows[0]['count_name'] as Number);
+          } else {
+            resolve((rows as RawZip[]).map((r) => r.name));
+          }
         })
         .on('error', (error) => {
           console.error(error);
           resolve(error);
         });
     });
+  }
+
+  fetchZipCodesWithGeometry(
+    pageNumber = 0,
+    pageSize = 30,
+  ): Promise<GeoFeaturesResponse> {
+    const offset = pageNumber * pageSize;
+    const limit = pageSize;
+
+    return this.getZipCodes(true).then(
+      (total: number) =>
+        new Promise((resolve) => {
+          const stringSelection = MemDataHubAPIService.toCommaSeparated([
+            'name',
+            'the_geom',
+          ]);
+
+          const pagesRemaining = Math.ceil((total - offset) / pageSize);
+
+          this.getConsumer('98jk-gvpk')
+            .select(stringSelection)
+            .limit(limit)
+            .offset(offset)
+            .order('name desc')
+            .getRows()
+            .on('success', (rows: RawGeoZip[]) => {
+              const features = rows.map((r) =>
+                MemDataHubAPIService.toFeature(r.the_geom, r.name),
+              );
+
+              resolve({
+                batchSize: features.length,
+                total,
+                pagesRemaining,
+                currentPage: Number(pageNumber),
+                data: {
+                  type: 'FeatureCollection',
+                  features,
+                },
+              });
+            })
+            .on('error', (error) => {
+              console.error(error);
+              resolve(error);
+            });
+        }),
+    );
   }
 
   getCensusTracts(count = false) {
@@ -129,7 +182,7 @@ export class MemDataHubAPIService {
   fetchTractsWithGeometry(
     pageNumber = 0,
     pageSize = 30,
-  ): Promise<TractFeaturesResponse> {
+  ): Promise<GeoFeaturesResponse> {
     const offset = pageNumber * pageSize;
     const limit = pageSize;
 
@@ -147,6 +200,7 @@ export class MemDataHubAPIService {
             .select(stringSelection)
             .limit(limit)
             .offset(offset)
+            .order('tract desc')
             .getRows()
             .on('success', (rows: RawGeoTract[]) => {
               const features = rows.map((r) =>
@@ -157,6 +211,7 @@ export class MemDataHubAPIService {
                 batchSize: features.length,
                 total,
                 pagesRemaining,
+                currentPage: Number(pageNumber),
                 data: {
                   type: 'FeatureCollection',
                   features,
