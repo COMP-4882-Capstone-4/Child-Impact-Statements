@@ -22,14 +22,23 @@ export class CensusAPIService {
     values: string[],
     vintage = 2018,
     tract: string | number = '*',
+    zcta: string | number = '*',
   ) {
+    let geoObject: any = {
+      state: '47',
+      county: '157',
+      tract,
+    };
+
+    if (!!zcta && zcta !== '*') {
+      geoObject = {
+        'zip-code-tabulation-area': zcta,
+      };
+    }
+
     const requestObject = {
       vintage,
-      geoHierarchy: {
-        state: '47',
-        county: '157',
-        tract,
-      },
+      geoHierarchy: geoObject,
       sourcePath,
       values,
       statsKey: this.apiKey,
@@ -48,12 +57,13 @@ export class CensusAPIService {
   }
 
   // TOTAL under 18 pop
-  under18Request(tract: string | number = '*') {
+  under18Request(tract: string | number = '*', zipCode: string | number = '*') {
     return this.buildRequest(
       ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0101_C01_022E', 'PLACE', 'GEOCOMP'],
+      ['NAME', 'S0101_C01_022E'],
       2019,
-      tract
+      tract,
+      zipCode,
     );
   }
 

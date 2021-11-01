@@ -9,8 +9,11 @@ export class CensusController {
 
   @Get('under18')
   @ApiQuery({ name: 'tract', type: String, required: false })
-  under18Request(@Query('tract') tract: string | number = '*') {
-    return this.censusAPIService.under18Request(tract);
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  under18Request(@Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.under18Request(tract, zipCode);
   }
   @Get('under18Male')
   under18MaleRequest() {
