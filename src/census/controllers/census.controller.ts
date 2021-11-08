@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query } from "@nestjs/common";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { CensusAPIService } from '../services/census-api.service';
 
 @Controller('census')
@@ -8,8 +8,12 @@ export class CensusController {
   constructor(private censusAPIService: CensusAPIService) {}
 
   @Get('under18')
-  under18Request() {
-    return this.censusAPIService.under18Request();
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  under18Request(@Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.under18Request(tract, zipCode);
   }
   @Get('under18Male')
   under18MaleRequest() {
