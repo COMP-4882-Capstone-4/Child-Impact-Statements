@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Observable } from 'rxjs';
+import { combineLatestWith, map, merge, Observable } from 'rxjs';
 import { PopulationStatResponse } from '../responses/population-stat.response';
+import { CensusVariable } from '../enum/census-variable.enum';
 
 @Injectable()
 export class CensusAPIService {
@@ -29,6 +30,7 @@ export class CensusAPIService {
     zcta: string | number = '*',
     type = 'under18',
   ) {
+    let byTract = true;
     let geoObject: any = {
       state: '47',
       county: '157',
@@ -36,9 +38,17 @@ export class CensusAPIService {
     };
 
     if (!!zcta && zcta !== '*') {
-      geoObject = {
-        'zip-code-tabulation-area': zcta,
-      };
+      byTract = false;
+      if (sourcePath.includes('subject')) {
+        geoObject = {
+          'zip+code+tabulation+area': zcta,
+        };
+      } else {
+        geoObject = {
+          state: '47',
+          'zip+code+tabulation+area': zcta,
+        };
+      }
     }
 
     const requestObject = {
@@ -49,18 +59,70 @@ export class CensusAPIService {
       statsKey: this.apiKey,
     };
 
+    const finalType = `${type}-by-${byTract ? 'tract' : 'zipcode'}`;
+
     return new Observable<PopulationStatResponse>((subscriber) => {
       this.census(requestObject, (err, res) => {
-        let response = PopulationStatResponse.errorResponse(type, err);
-
         if (!!!err) {
-          response = PopulationStatResponse.response(type, res);
+          subscriber.next(PopulationStatResponse.response(finalType, res));
+        } else {
+          subscriber.error(err);
         }
 
-        subscriber.next(response);
         subscriber.complete();
       });
     });
+  }
+
+  /**
+   * Request the total population in Shelby county
+   * @param tract
+   * @param zipCode
+   */
+  breakdownRequest(
+    tract: string | number = '*',
+    zipCode: string | number = '*',
+  ) {
+    return this.buildRequest(
+      ['acs', 'acs5', 'subject'],
+      [
+        'NAME',
+        CensusVariable.TOTAL_POP,
+        CensusVariable.TOTAL_UNDER_18_POP,
+        CensusVariable.TOTAL_UNDER_18_MALE_POP,
+        CensusVariable.TOTAL_UNDER_18_FEMALE_POP,
+      ],
+      2019,
+      tract,
+      zipCode,
+      'breakdown',
+    ).pipe(
+      combineLatestWith(this.childrenUnderPovertyLevelRequest(tract, zipCode)),
+      map((data: PopulationStatResponse[]) => {
+        if (data.length > 1) {
+          const by = zipCode !== '*' ? 'zipcode' : 'tract';
+
+          return data[0].combine(data[1], 'breakdown-poverty-population', by);
+        }
+
+        return data[0];
+      }),
+    );
+  }
+
+  /**
+   * Request the total population in Shelby county
+   * @param tract
+   * @param zipCode
+   */
+  totalRequest(tract: string | number = '*', zipCode: string | number = '*') {
+    return this.buildRequest(
+      ['acs', 'acs5', 'subject'],
+      ['NAME', CensusVariable.TOTAL_POP],
+      2019,
+      tract,
+      zipCode,
+    );
   }
 
   /**
@@ -71,7 +133,7 @@ export class CensusAPIService {
   under18Request(tract: string | number = '*', zipCode: string | number = '*') {
     return this.buildRequest(
       ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0101_C01_022E'],
+      ['NAME', CensusVariable.TOTAL_UNDER_18_POP],
       2019,
       tract,
       zipCode,
@@ -89,7 +151,7 @@ export class CensusAPIService {
   ) {
     return this.buildRequest(
       ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0101_C03_022E'],
+      ['NAME', CensusVariable.TOTAL_UNDER_18_MALE_POP],
       2019,
       tract,
       zipCode,
@@ -108,7 +170,7 @@ export class CensusAPIService {
   ) {
     return this.buildRequest(
       ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0101_C05_022E'],
+      ['NAME', CensusVariable.TOTAL_UNDER_18_FEMALE_POP],
       2019,
       tract,
       zipCode,
@@ -116,57 +178,22 @@ export class CensusAPIService {
     );
   }
 
-  /**
-   * Request the population in Shelby county ages 3 and up that are enrolled in nursery school
-   * @param tract - The US Census Tract Number
-   * @param zipCode - ZIP Code
-   */
-  over3InNurserySchoolRequest(
+  childrenUnderPovertyLevelRequest(
     tract: string | number = '*',
     zipCode: string | number = '*',
   ) {
     return this.buildRequest(
-      ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0501_C02_034E'],
+      ['acs', 'acs5'],
+      [
+        'NAME',
+        CensusVariable.TOTAL_POVERTY_STATUS_UNDER_6,
+        CensusVariable.TOTAL_POVERTY_STATUS_6_TO_11,
+        CensusVariable.TOTAL_POVERTY_STATUS_12_TO_17,
+      ],
       2019,
       tract,
       zipCode,
-      'over3-nursery-school',
-    );
-  }
-
-  /**
-   * Request the population in Shelby county ages 3 and up that are enrolled in K-8 school
-   * @param tract - The US Census Tract Number
-   * @param zipCode - ZIP Code
-   */
-  over3InElementarySchoolRequest(
-    tract: string | number = '*',
-    zipCode: string | number = '*',
-  ) {
-    return this.buildRequest(
-      ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0501_C02_035E'],
-      2016,
-      tract,
-      zipCode,
-      'over3-k8-school',
-    );
-  }
-
-  // Children 3 and older in 9-12
-  over3InHighSchoolRequest() {
-    return this.buildRequest(
-      ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0501_C02_036E'],
-    );
-  }
-
-  // Poverty Rates in Families with Children under 18
-  under18FamilyPovertyRequest() {
-    return this.buildRequest(
-      ['acs', 'acs5', 'subject'],
-      ['NAME', 'S0501_C02_108E'],
+      'under18-poverty-breakdown',
     );
   }
 }

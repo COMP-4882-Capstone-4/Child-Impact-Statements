@@ -8,6 +8,28 @@ import { PopulationStatResponse } from '../responses/population-stat.response';
 export class CensusController {
   constructor(private censusAPIService: CensusAPIService) {}
 
+  @Get('breakdown')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  breakdownRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.breakdownRequest(tract, zipCode);
+  }
+
+  @Get('total')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  totalRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.totalRequest(tract, zipCode);
+  }
+
   @Get('under18')
   @ApiQuery({ name: 'tract', type: String, required: false })
   @ApiQuery({ name: 'zipCode', type: String, required: false })
@@ -41,35 +63,17 @@ export class CensusController {
     return this.censusAPIService.under18FemaleRequest(tract, zipCode);
   }
 
-  @Get('over3InNurserySchool')
+  @Get('underPovertyLevel')
   @ApiQuery({ name: 'tract', type: String, required: false })
   @ApiQuery({ name: 'zipCode', type: String, required: false })
   @ApiResponse({ type: PopulationStatResponse })
-  over3InNurserySchoolRequest(
+  childrenUnderPovertyLevelRequest(
     @Query('tract') tract: string | number = '*',
     @Query('zipCode') zipCode: string | number = '*',
   ) {
-    return this.censusAPIService.over3InNurserySchoolRequest(tract, zipCode);
-  }
-
-  @Get('over3InElementarySchool')
-  @ApiQuery({ name: 'tract', type: String, required: false })
-  @ApiQuery({ name: 'zipCode', type: String, required: false })
-  @ApiResponse({ type: PopulationStatResponse })
-  over3InElementarySchoolRequest(
-    @Query('tract') tract: string | number = '*',
-    @Query('zipCode') zipCode: string | number = '*',
-  ) {
-    return this.censusAPIService.over3InElementarySchoolRequest(tract, zipCode);
-  }
-
-  @Get('over3InHighSchool')
-  over3InHighSchoolRequest() {
-    return this.censusAPIService.over3InHighSchoolRequest();
-  }
-
-  @Get('under18FamilyPoverty')
-  under18FamilyPovertyRequest() {
-    return this.censusAPIService.under18FamilyPovertyRequest();
+    return this.censusAPIService.childrenUnderPovertyLevelRequest(
+      tract,
+      zipCode,
+    );
   }
 }

@@ -9,17 +9,9 @@ export class PopulationStatResponse {
   @ApiModelProperty({ type: PopulationStat, isArray: true })
   stats: PopulationStat[] = [];
 
-  @ApiModelProperty({ required: false })
-  error: string | null = null;
-
-  constructor(type: string, stats: PopulationStat[], error: string = null) {
+  constructor(type: string, stats: PopulationStat[]) {
     this.type = type;
     this.stats = stats;
-    this.error = error;
-  }
-
-  static errorResponse(type: string, error: string): PopulationStatResponse {
-    return new PopulationStatResponse(type, [], error);
   }
 
   static response(type: string, rawStats: any[]) {
@@ -28,5 +20,28 @@ export class PopulationStatResponse {
     });
 
     return new PopulationStatResponse(type, stats);
+  }
+
+  combine(
+    other: PopulationStatResponse,
+    type: string,
+    by: 'zipcode' | 'tract' = 'tract',
+  ) {
+    const byTract = by === 'tract';
+    const newStats = this.stats.map((stat) => {
+      const otherStat = other.stats.find((s) => {
+        if (byTract) {
+          return s.censusTract === stat.censusTract;
+        } else {
+          return s.zipCode === stat.zipCode;
+        }
+      });
+
+      console.log('STAT', stat);
+      console.log('OTHER', otherStat);
+      return { ...stat, ...otherStat };
+    });
+
+    return new PopulationStatResponse(type, newStats);
   }
 }
