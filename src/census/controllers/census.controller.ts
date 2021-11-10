@@ -1,10 +1,17 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  Controller,
+  Get,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CensusAPIService } from '../services/census-api.service';
 import { PopulationStatResponse } from '../responses/population-stat.response';
 
 @Controller('census')
 @ApiTags('Census')
+@UseInterceptors(CacheInterceptor)
 export class CensusController {
   constructor(private censusAPIService: CensusAPIService) {}
 

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { combineLatestWith, map, merge, Observable } from 'rxjs';
+import { combineLatestWith, map, Observable } from 'rxjs';
 import { PopulationStatResponse } from '../responses/population-stat.response';
 import { CensusVariable } from '../enum/census-variable.enum';
 
 @Injectable()
 export class CensusAPIService {
-  private census = require('citysdk');
-  private apiKey: string;
+  private censusAPI = require('citysdk');
+  private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('CENSUS_API_KEY');
@@ -62,7 +62,7 @@ export class CensusAPIService {
     const finalType = `${type}-by-${byTract ? 'tract' : 'zipcode'}`;
 
     return new Observable<PopulationStatResponse>((subscriber) => {
-      this.census(requestObject, (err, res) => {
+      this.censusAPI(requestObject, (err, res) => {
         if (!!!err) {
           subscriber.next(PopulationStatResponse.response(finalType, res));
         } else {
