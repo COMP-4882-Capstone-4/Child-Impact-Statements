@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { combineLatestWith, map, Observable } from 'rxjs';
 import { PopulationStatResponse } from '../responses/population-stat.response';
@@ -7,6 +7,8 @@ import { CensusVariable } from '../enum/census-variable.enum';
 @Injectable()
 export class CensusAPIService {
   private censusAPI = require('citysdk');
+
+  private readonly logger: Logger = new Logger('Census API Service');
   private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
@@ -60,11 +62,24 @@ export class CensusAPIService {
     };
 
     const finalType = `${type}-by-${byTract ? 'tract' : 'zipcode'}`;
+    const tractOrZip = byTract ? Number(tract) : Number(zcta);
+    const dataType = type.includes('poverty') ? 'poverty' : 'gender';
+    const byType = byTract ? 'tract' : 'zipcode';
+
+    this.logger.debug(`Fetching ${finalType} for`, geoObject);
 
     return new Observable<PopulationStatResponse>((subscriber) => {
       this.censusAPI(requestObject, (err, res) => {
         if (!!!err) {
-          subscriber.next(PopulationStatResponse.response(finalType, res));
+          subscriber.next(
+            PopulationStatResponse.response(
+              finalType,
+              res,
+              tractOrZip,
+              dataType,
+              byType,
+            ),
+          );
         } else {
           subscriber.error(err);
         }
@@ -106,6 +121,10 @@ export class CensusAPIService {
         }
 
         return data[0];
+      }),
+      map((data) => {
+        data.stats.sort((a, b) => b.populationUnder18 - a.populationUnder18);
+        return data;
       }),
     );
   }

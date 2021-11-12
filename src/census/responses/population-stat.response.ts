@@ -14,10 +14,20 @@ export class PopulationStatResponse {
     this.stats = stats;
   }
 
-  static response(type: string, rawStats: any[]) {
+  static response(
+    type: string,
+    rawStats: any[],
+    tractOrZip: number,
+    dataType: 'poverty' | 'gender',
+    byType: 'tract' | 'zipcode',
+  ) {
     const stats = (rawStats as any[]).map((r) => {
       return deserialize<PopulationStat>(r, PopulationStat);
     });
+
+    if (stats.length === 0) {
+      stats.push(PopulationStat.emptyStat(tractOrZip, byType, dataType));
+    }
 
     return new PopulationStatResponse(type, stats);
   }

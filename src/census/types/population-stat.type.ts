@@ -1,6 +1,6 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import {CensusVariable} from "../enum/census-variable.enum";
+import { CensusVariable } from '../enum/census-variable.enum';
 
 @Serializable()
 export class PopulationStat {
@@ -109,4 +109,30 @@ export class PopulationStat {
   @ApiModelProperty({ required: false })
   @JsonProperty({ name: 'tract', required: false })
   censusTract: number;
+
+  static emptyStat(
+    tractOrZip: number,
+    byType: 'tract' | 'zipcode',
+    dataType: 'poverty' | 'gender',
+  ): PopulationStat {
+    const newStat = new PopulationStat();
+
+    if (dataType === 'gender') {
+      newStat.populationUnder18 = 0;
+      newStat.populationUnder18Female = 0;
+      newStat.populationUnder18Male = 0;
+    } else if (dataType === 'poverty') {
+      newStat.populationInPovertyUnder6 = 0;
+      newStat.populationInPoverty6To11 = 0;
+      newStat.populationInPoverty12To17 = 0;
+    }
+
+    if (byType === 'tract') {
+      newStat.censusTract = tractOrZip;
+    } else if (byType === 'zipcode') {
+      newStat.zipCode = tractOrZip;
+    }
+
+    return newStat;
+  }
 }
