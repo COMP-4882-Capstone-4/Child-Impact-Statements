@@ -1,46 +1,86 @@
-import { Controller, Get, Query } from "@nestjs/common";
-import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import {
+  CacheInterceptor,
+  Controller,
+  Get,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CensusAPIService } from '../services/census-api.service';
+import { PopulationStatResponse } from '../responses/population-stat.response';
 
 @Controller('census')
 @ApiTags('Census')
+@UseInterceptors(CacheInterceptor)
 export class CensusController {
   constructor(private censusAPIService: CensusAPIService) {}
+
+  @Get('breakdown')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  breakdownRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.breakdownRequest(tract, zipCode);
+  }
+
+  @Get('total')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  totalRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.totalRequest(tract, zipCode);
+  }
 
   @Get('under18')
   @ApiQuery({ name: 'tract', type: String, required: false })
   @ApiQuery({ name: 'zipCode', type: String, required: false })
-  under18Request(@Query('tract') tract: string | number = '*',
+  @ApiResponse({ type: PopulationStatResponse })
+  under18Request(
+    @Query('tract') tract: string | number = '*',
     @Query('zipCode') zipCode: string | number = '*',
   ) {
     return this.censusAPIService.under18Request(tract, zipCode);
   }
+
   @Get('under18Male')
-  under18MaleRequest() {
-    return this.censusAPIService.under18MaleRequest();
-  }
-  @Get('under18Fem')
-  under18FemRequest() {
-    return this.censusAPIService.under18FemRequest();
-  }
-
-  @Get('over3InNurserySchool')
-  over3InNurserySchoolRequest() {
-    return this.censusAPIService.over3InNurserySchoolRequest();
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  under18MaleRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.under18MaleRequest(tract, zipCode);
   }
 
-  @Get('over3InElementarySchool')
-  over3InElementarySchoolRequest() {
-    return this.censusAPIService.over3InElementarySchoolRequest();
+  @Get('under18Female')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  under18FemRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.under18FemaleRequest(tract, zipCode);
   }
 
-  @Get('over3InHighSchool')
-  over3InHighSchoolRequest() {
-    return this.censusAPIService.over3InHighSchoolRequest();
-  }
-
-  @Get('under18FamilyPoverty')
-  under18FamilyPovertyRequest() {
-    return this.censusAPIService.under18FamilyPovertyRequest();
+  @Get('underPovertyLevel')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiResponse({ type: PopulationStatResponse })
+  childrenUnderPovertyLevelRequest(
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+  ) {
+    return this.censusAPIService.childrenUnderPovertyLevelRequest(
+      tract,
+      zipCode,
+    );
   }
 }
