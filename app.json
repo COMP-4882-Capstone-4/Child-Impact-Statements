@@ -4,7 +4,7 @@
   "repository": "https://github.com/COMP-4882-Capstone-4/Child-Impact-Statements",
   "success_url": "/",
   "addons": [
-    "openredis"
+    "heroku-redis"
   ],
   "buildpacks": [
     {
