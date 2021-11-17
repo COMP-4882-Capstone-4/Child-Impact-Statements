@@ -1,0 +1,14 @@
+{
+  "name": "cis_backend",
+  "description": "The backend for the Child Impact Statements Angular frontend",
+  "repository": "https://github.com/COMP-4882-Capstone-4/Child-Impact-Statements",
+  "success_url": "/",
+  "addons": [
+    "openredis"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
