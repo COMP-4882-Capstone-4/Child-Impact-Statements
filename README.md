@@ -1,17 +1,33 @@
-# LMaoo
-## you really be reading this
-### moron
+# cis_backend
+Child Impact Statements - NestJS Backend
 
-Heres how you run this stuff. Make sure you got nodeJS and npm installed (Luis don't fucking use `apt-get` i swear to god)
+## Setup
 
-Clone the repo, use WSL2 or Linux or macOS. If you try and get this shit working natively on windows, you're on your own. Fuck windows.
+1. Ensure the npm dependencies are installed: `npm i`.
+2. Create a `.env` file based on the template:
+```text
+CENSUS_API_KEY=123123123123123123123
+NODE_ENV=development
+```
 
-Inside the repo folder, again using a command line terminal, run `npm i` to install the dependencies.
+Also note that the Census API key (`CENSUS_API_KEY`) is optional here. 
+If you do not have a key or you wish to run the backend without a key,
+just omit this line in your `.env` file.
 
-Next, just run `npm run start:dev`.
+Additionally, to use a Redis instance for caching, please set the `REDIS_URL` environment variable,
+either in your `.env` file or passing it in the execution context.
 
-The API should be up at `http://localhost:3000`
+3. Start the backend by running either `npm run start` or `npm run start:dev`
 
-You can view the "API documentation" at `http://localhost:3000/api`
+## Building
+To build the server, please run `npm run build`. The resulting files will be available in `dist/`.
 
-If it doesnt work, just google the error and don't fuck up the repo kthnxbye
+## Deploying
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/COMP-4882-Capstone-4/Child-Impact-Statements)
+
+
+## Notes
+If you plan to build and run this application for local development, please run `npm run start:dev`, 
+otherwise you will have to manually restart the server each time you make a change.
+
