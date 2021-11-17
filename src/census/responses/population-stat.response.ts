@@ -47,8 +47,6 @@ export class PopulationStatResponse {
         }
       });
 
-      console.log('STAT', stat);
-      console.log('OTHER', otherStat);
       return { ...stat, ...otherStat };
     });
 
