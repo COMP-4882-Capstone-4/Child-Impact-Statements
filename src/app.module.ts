@@ -6,6 +6,7 @@ import { CensusModule } from './census/census.module';
 import { MemDataHubModule } from './mem-datahub/mem-datahub';
 import { CacheConfigService } from './config/cache-config.service';
 import { GeodataModule } from './geodata/geodata.module';
+import { SchoolsModule } from './schools/schools.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GeodataModule } from './geodata/geodata.module';
     CensusModule,
     MemDataHubModule,
     GeodataModule,
+    SchoolsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

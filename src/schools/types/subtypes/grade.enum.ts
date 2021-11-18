@@ -1,0 +1,17 @@
+export enum Grade {
+  PRE_K = 'Pre-K',
+  KINDERGARTEN = 'KG',
+  FIRST_GRADE = '01',
+  SECOND_GRADE = '02',
+  THIRD_GRADE = '03',
+  FOURTH_GRADE = '04',
+  FIFTH_GRADE = '04',
+  SIXTH_GRADE = '06',
+  SEVENTH_GRADE = '07',
+  EIGHTH_GRADE = '08',
+  NINTH_GRADE = '09',
+  TENTH_GRADE = '10',
+  ELEVENTH_GRADE = '11',
+  TWELFTH_GRADE = '12',
+  ALL = 'All Grades',
+}
