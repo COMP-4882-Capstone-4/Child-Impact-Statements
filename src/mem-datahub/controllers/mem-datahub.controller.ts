@@ -29,7 +29,7 @@ export class MemDataHubController {
   }
 
   @Get('PZipCodes')
-  @ApiQuery({ name: 'zipcode', type: String })
+  @ApiQuery({ name: 'zipcode', required: false, type: String })
   getPZipCodes(@Query('zipcode') zipcode: string) {
     return this.MemDataHubAPIService.getPZipCodes(zipcode);
   }

@@ -106,9 +106,21 @@ export class MemDataHubAPIService {
 
   getPZipCodes(zipcode: string) {
     return new Promise((resolve) => {
-      const search = "name like '%" + zipcode + "%'";
+      if(zipcode == null){
+        this.getConsumer('98jk-gvpk')
+        .select('name')
+        .getRows()
+        .on('success', (rows: RawZip[] | any[]) => {
+          resolve((rows as RawZip[]).map((r) => r.name));
+        })
+        .on('error', (error) => {
+          console.error(error);
+          resolve(error);
+        });
+      } else{
+        const search = "name like '%" + zipcode + "%'";
 
-      this.getConsumer('98jk-gvpk')
+        this.getConsumer('98jk-gvpk')
         .select('name')
         .where(search)
         .getRows()
@@ -119,6 +131,10 @@ export class MemDataHubAPIService {
           console.error(error);
           resolve(error);
         });
+      }
+      
+
+      
     });
   }
 
