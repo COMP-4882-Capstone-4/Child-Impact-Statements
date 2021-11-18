@@ -31,3 +31,11 @@ To build the server, please run `npm run build`. The resulting files will be ava
 If you plan to build and run this application for local development, please run `npm run start:dev`, 
 otherwise you will have to manually restart the server each time you make a change.
 
+### Updating SCS Data
+By default, without a `membership.json` file in `src/schools/data`, the application service will try and parse
+`membership.xlsx` in `src/schools/data`, which is available at https://www.tn.gov/content/dam/tn/education/data/membership201920.xlsx.
+
+Note, parsing the Excel spreadsheet in its default form will take a lot of memory and a good bit of time. It is reccomended that you shrink
+the data in the Excel spreadsheet to only include the Shelby Country district.
+
+Once the Excel spreadsheet is parsed, the data is cached in `membership.json`.
