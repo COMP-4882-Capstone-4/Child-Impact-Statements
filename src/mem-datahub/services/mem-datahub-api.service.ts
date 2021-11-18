@@ -81,13 +81,14 @@ export class MemDataHubAPIService {
     });
   }
 
-  getZipCodes(count: boolean) {
+  getZipCodes(count: boolean, zipcode: string) {
     return new Promise((resolve) => {
       const baseSelection = MemDataHubAPIService.toCommaSeparated(['name']);
 
       const stringSelection = count ? "count('name')" : baseSelection;
 
-      this.getConsumer('98jk-gvpk')
+      if(zipcode == null){
+        this.getConsumer('98jk-gvpk')
         .select(stringSelection)
         .getRows()
         .on('success', (rows: RawZip[] | any[]) => {
@@ -101,40 +102,40 @@ export class MemDataHubAPIService {
           console.error(error);
           resolve(error);
         });
-    });
-  }
-
-  getPZipCodes(zipcode: string) {
-    return new Promise((resolve) => {
-      if(zipcode == null){
-        this.getConsumer('98jk-gvpk')
-        .select('name')
-        .getRows()
-        .on('success', (rows: RawZip[] | any[]) => {
-          resolve((rows as RawZip[]).map((r) => r.name));
-        })
-        .on('error', (error) => {
-          console.error(error);
-          resolve(error);
-        });
-      } else{
+      }else{
         const search = "name like '%" + zipcode + "%'";
 
         this.getConsumer('98jk-gvpk')
-        .select('name')
+        .select(stringSelection)
         .where(search)
         .getRows()
         .on('success', (rows: RawZip[] | any[]) => {
-          resolve((rows as RawZip[]).map((r) => r.name));
+          if (count && rows.length > 0) {
+            resolve(rows[0]['count_name'] as Number);
+          } else {
+            resolve((rows as RawZip[]).map((r) => r.name));
+          }
         })
         .on('error', (error) => {
           console.error(error);
           resolve(error);
         });
       }
-      
 
-      
+      // this.getConsumer('98jk-gvpk')
+      //   .select(stringSelection)
+      //   .getRows()
+      //   .on('success', (rows: RawZip[] | any[]) => {
+      //     if (count && rows.length > 0) {
+      //       resolve(rows[0]['count_name'] as Number);
+      //     } else {
+      //       resolve((rows as RawZip[]).map((r) => r.name));
+      //     }
+      //   })
+      //   .on('error', (error) => {
+      //     console.error(error);
+      //     resolve(error);
+      //   });
     });
   }
 
@@ -145,7 +146,7 @@ export class MemDataHubAPIService {
     const offset = pageNumber * pageSize;
     const limit = pageSize;
 
-    return this.getZipCodes(true).then(
+    return this.getZipCodes(true,null).then(
       (total: number) =>
         new Promise((resolve) => {
           const stringSelection = MemDataHubAPIService.toCommaSeparated([

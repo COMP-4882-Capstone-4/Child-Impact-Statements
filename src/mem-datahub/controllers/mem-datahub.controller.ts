@@ -23,15 +23,10 @@ export class MemDataHubController {
   }
 
   @Get('zipCodes')
-  @ApiQuery({ name: 'getCount', required: false, type: Boolean })
-  getZipCodes(@Query('getCount') getCount: boolean = false) {
-    return this.MemDataHubAPIService.getZipCodes(getCount);
-  }
-
-  @Get('PZipCodes')
   @ApiQuery({ name: 'zipcode', required: false, type: String })
-  getPZipCodes(@Query('zipcode') zipcode: string) {
-    return this.MemDataHubAPIService.getPZipCodes(zipcode);
+  @ApiQuery({ name: 'getCount', required: false, type: Boolean })
+  getZipCodes(@Query('getCount') getCount: boolean = false, @Query('zipcode') zipcode:string) {
+    return this.MemDataHubAPIService.getZipCodes(getCount, zipcode);
   }
 
   @Get('page/zipGeometry')
