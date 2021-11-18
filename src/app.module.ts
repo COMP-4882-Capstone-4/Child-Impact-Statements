@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CensusModule } from './census/census.module';
 import { MemDataHubModule } from './mem-datahub/mem-datahub';
 import { CacheConfigService } from './config/cache-config.service';
+import { GeodataModule } from './geodata/geodata.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CacheConfigService } from './config/cache-config.service';
     }),
     CensusModule,
     MemDataHubModule,
+    GeodataModule,
   ],
   controllers: [AppController],
   providers: [AppService],
