@@ -28,6 +28,12 @@ export class MemDataHubController {
     return this.MemDataHubAPIService.getZipCodes(getCount);
   }
 
+  @Get('PZipCodes')
+  @ApiQuery({ name: 'zipcode', type: String })
+  getPZipCodes(@Query('zipcode') zipcode: string) {
+    return this.MemDataHubAPIService.getPZipCodes(zipcode);
+  }
+
   @Get('page/zipGeometry')
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
   @ApiQuery({ name: 'pageNumber', type: Number, required: false })

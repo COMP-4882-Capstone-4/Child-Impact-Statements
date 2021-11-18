@@ -15,7 +15,7 @@ export class CacheConfigService implements CacheOptionsFactory {
 
   constructor(private configService: ConfigService) {
     this.useRedis = configService.get('NODE_ENV') !== 'development'; // Only use redis on non-dev environments
-    this.redisURL = configService.get('REDIS_URL') || 'localhost';
+    this.redisURL = configService.get('REDIS_URL') || '0.0.0.0';
   }
 
   createCacheOptions(): CacheModuleOptions {

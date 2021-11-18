@@ -104,6 +104,25 @@ export class MemDataHubAPIService {
     });
   }
 
+  getPZipCodes(zipcode: string) {
+    return new Promise((resolve) => {
+      const stringSelection = MemDataHubAPIService.toCommaSeparated(['name']);
+      const search = "name like '%" + zipcode + "%'";
+
+      this.getConsumer('98jk-gvpk')
+        .select('name')
+        .where(search)
+        .getRows()
+        .on('success', (rows: RawZip[] | any[]) => {
+          resolve((rows as RawZip[]).map((r) => r.name));
+        })
+        .on('error', (error) => {
+          console.error(error);
+          resolve(error);
+        });
+    });
+  }
+
   fetchZipCodesWithGeometry(
     pageNumber = 0,
     pageSize = 30,
