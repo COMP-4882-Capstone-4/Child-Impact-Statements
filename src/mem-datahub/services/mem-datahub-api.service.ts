@@ -106,7 +106,6 @@ export class MemDataHubAPIService {
 
   getPZipCodes(zipcode: string) {
     return new Promise((resolve) => {
-      const stringSelection = MemDataHubAPIService.toCommaSeparated(['name']);
       const search = "name like '%" + zipcode + "%'";
 
       this.getConsumer('98jk-gvpk')
