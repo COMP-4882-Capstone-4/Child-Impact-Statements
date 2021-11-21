@@ -5,7 +5,7 @@ import { CensusVariable } from '../enum/census-variable.enum';
 @Serializable()
 export class PopulationStat {
   @ApiModelProperty({ required: false })
-  @JsonProperty({
+  @JsonProperty({ 
     name: CensusVariable.TOTAL_POP,
     required: false,
     beforeDeserialize: (p) => {
@@ -103,6 +103,48 @@ export class PopulationStat {
   populationInPoverty12To17: number;
 
   @ApiModelProperty({ required: false })
+  @JsonProperty({
+    name: CensusVariable.TOTAL_UNDER_5_POP,
+    required: false,
+    beforeDeserialize: (p) => {
+      if (p === 'NAN: null') {
+        return -1;
+      }
+
+      return p;
+    },
+  })
+  populationUnder5: number;
+
+  @ApiModelProperty({ required: false })
+  @JsonProperty({
+    name: CensusVariable.TOTAL_UNDER_5_FEMALE_POP,
+    required: false,
+    beforeDeserialize: (p) => {
+      if (p === 'NAN: null') {
+        return -1;
+      }
+
+      return p;
+    },
+  })
+  populationUnder5Female: number;
+
+  @ApiModelProperty({ required: false })
+  @JsonProperty({
+    name: CensusVariable.TOTAL_UNDER_5_POP,
+    required: false,
+    beforeDeserialize: (p) => {
+      if (p === 'NAN: null') {
+        return -1;
+      }
+
+      return p;
+    },
+  })
+  populationUnder5Male: number;
+
+  @ApiModelProperty({ required: false })
   @JsonProperty({ name: 'zip-code-tabulation-area', required: false })
   zipCode: number;
 
@@ -121,6 +163,8 @@ export class PopulationStat {
       newStat.populationUnder18 = 0;
       newStat.populationUnder18Female = 0;
       newStat.populationUnder18Male = 0;
+      newStat.populationUnder5Female = 0;
+      newStat.populationUnder5Male = 0;
     } else if (dataType === 'poverty') {
       newStat.populationInPovertyUnder6 = 0;
       newStat.populationInPoverty6To11 = 0;

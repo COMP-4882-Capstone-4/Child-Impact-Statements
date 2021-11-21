@@ -215,4 +215,22 @@ export class CensusAPIService {
       'under18-poverty-breakdown',
     );
   }
+
+  filteredRequest(
+    tract: string | number = '*',
+    zipCode: string | number = '*', 
+    filters: CensusVariable
+    ){
+
+      var arr = ['NAME'];
+      arr = arr.concat(filters);
+    return this.buildRequest(
+      ['acs', 'acs5', 'subject'],
+      arr,
+      2019,
+      tract,
+      zipCode,
+      'filtered',
+    );
+  }
 }

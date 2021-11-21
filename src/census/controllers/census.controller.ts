@@ -8,6 +8,7 @@ import {
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CensusAPIService } from '../services/census-api.service';
 import { PopulationStatResponse } from '../responses/population-stat.response';
+import { CensusVariable } from '../enum/census-variable.enum';
 
 @Controller('census')
 @ApiTags('Census')
@@ -81,6 +82,23 @@ export class CensusController {
     return this.censusAPIService.childrenUnderPovertyLevelRequest(
       tract,
       zipCode,
+    );
+  }
+
+  @Get('filtered')
+  @ApiQuery({ name: 'tract', type: String, required: false })
+  @ApiQuery({ name: 'zipCode', type: String, required: false })
+  @ApiQuery({name: 'filters', enum:CensusVariable, isArray: true, required: true})
+  @ApiResponse({ type: PopulationStatResponse })
+  filteredRequest(    
+    @Query('tract') tract: string | number = '*',
+    @Query('zipCode') zipCode: string | number = '*',
+    @Query('filters') filters: CensusVariable
+    ){
+    return this.censusAPIService.filteredRequest(
+      tract,
+      zipCode,
+      filters
     );
   }
 }
