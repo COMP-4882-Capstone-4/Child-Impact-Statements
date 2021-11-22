@@ -1,6 +1,4 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CensusModule } from './census/census.module';
 import { MemDataHubModule } from './mem-datahub/mem-datahub';
@@ -22,7 +20,5 @@ import { SchoolsModule } from './schools/schools.module';
     GeodataModule,
     SchoolsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
