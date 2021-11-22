@@ -3,9 +3,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { School } from '../types';
 import { CachedSchools } from '../types/cached-schools.type';
+import { SchoolStatBreakdown } from '../types/school-stat-breakdown.type';
 import * as fs from 'fs';
 import * as path from 'path';
-import {SchoolStatBreakdown} from "../types/school-stat-breakdown.type";
 
 @Injectable()
 export class SchoolsService {
@@ -23,9 +23,11 @@ export class SchoolsService {
 
   public getBreakdownForSchool(id: number) {
     const schools = this.schools.filter((s) => s.schoolID === id);
+    console.log(schools);
     const breakdown = new SchoolStatBreakdown(schools[0]);
 
     breakdown.addSchools(schools);
+
     return breakdown;
   }
 
