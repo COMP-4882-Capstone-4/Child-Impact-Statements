@@ -23,7 +23,6 @@ export class SchoolsService {
 
   public getBreakdownForSchool(id: number) {
     const schools = this.schools.filter((s) => s.schoolID === id);
-    console.log(schools);
     const breakdown = new SchoolStatBreakdown(schools[0]);
 
     breakdown.addSchools(schools);
