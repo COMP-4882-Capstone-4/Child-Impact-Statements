@@ -227,6 +227,7 @@ export class CensusAPIService {
     return this.buildRequest(
       ['acs', 'acs5', 'subject'],
       arr,
+      // ['NAME', CensusVariable.TOTAL_UNDER_5_MALE_POP],
       2019,
       tract,
       zipCode,

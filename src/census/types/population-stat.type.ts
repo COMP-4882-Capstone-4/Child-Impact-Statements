@@ -132,7 +132,7 @@ export class PopulationStat {
 
   @ApiModelProperty({ required: false })
   @JsonProperty({
-    name: CensusVariable.TOTAL_UNDER_5_POP,
+    name: CensusVariable.TOTAL_UNDER_5_MALE_POP,
     required: false,
     beforeDeserialize: (p) => {
       if (p === 'NAN: null') {
