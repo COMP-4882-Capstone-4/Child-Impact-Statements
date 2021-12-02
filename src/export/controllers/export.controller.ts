@@ -71,7 +71,7 @@ export class ExportController {
     @Response({ passthrough: true }) res,
     @Body() schoolBreakdownRequest: SchoolBreakdownRequest,
   ): Promise<StreamableFile> {
-    const sheetName = `${schoolBreakdownRequest.schoolName}`;
+    const sheetName = 'School Information';
     const fileName = ExportService.buildFileName(
       `school ${schoolBreakdownRequest.schoolName}`,
       'xlsx',

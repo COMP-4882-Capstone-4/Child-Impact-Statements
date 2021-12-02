@@ -22,6 +22,7 @@ export class ExportService {
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Attachment-Filename': fileName,
     });
 
     return new StreamableFile(buffer);
