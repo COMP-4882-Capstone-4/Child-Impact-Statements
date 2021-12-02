@@ -38,8 +38,10 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "soda-js": "^0.2.3",
+    "string-pixel-width": "^1.10.0",
     "swagger-ui-express": "^4.1.6",
-    "typescript-json-serializer": "^3.4.4"
+    "typescript-json-serializer": "^3.4.4",
+    "xlsx": "^0.17.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
