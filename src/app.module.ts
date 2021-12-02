@@ -5,6 +5,7 @@ import { MemDataHubModule } from './mem-datahub/mem-datahub';
 import { CacheConfigService } from './config/cache-config.service';
 import { GeodataModule } from './geodata/geodata.module';
 import { SchoolsModule } from './schools/schools.module';
+import { ExportModule } from './export/export.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SchoolsModule } from './schools/schools.module';
     MemDataHubModule,
     GeodataModule,
     SchoolsModule,
+    ExportModule,
   ],
 })
 export class AppModule {}
