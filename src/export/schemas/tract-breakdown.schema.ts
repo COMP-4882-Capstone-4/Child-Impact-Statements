@@ -39,15 +39,15 @@ export const TractBreakdownSchema: {
     type: 'number',
   },
   {
-    column: 'Public Parks in ZIP Code',
+    column: 'Public Parks in Tract',
     type: 'number',
   },
   {
-    column: 'Public Libraries in ZIP Code',
+    column: 'Public Libraries in Tract',
     type: 'number',
   },
   {
-    column: 'Community Centers in ZIP Code',
+    column: 'Community Centers in Tract',
     type: 'number',
   },
 ];
